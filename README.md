@@ -8,5 +8,6 @@ Development is based on the following Espressif example repositories:
 
 # Build & Flash
 
-Building and flashing this project is the same as with other projects based on the IDF-ESP framework. 
+Building and flashing this project is the same as with other projects based on the IDF-ESP framework.
+
 Please review this [link](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started); if you are able to build and flash the getting started example, you can do the same with this code. :-)
