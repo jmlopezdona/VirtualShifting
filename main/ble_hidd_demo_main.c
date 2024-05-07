@@ -67,7 +67,6 @@ const char *button_event_table[] = {
     "BUTTON_LONG_PRESS_UP",
 };
 
-
 static uint16_t hid_conn_id = 0;
 static bool sec_conn = false;
 static bool send_volum_up = false;
@@ -109,14 +108,44 @@ static esp_ble_adv_params_t hidd_adv_params = {
     .adv_filter_policy = ADV_FILTER_ALLOW_SCAN_ANY_CON_ANY,
 };
 
+static void send_consumer_value(uint16_t key, bool press) {
+    esp_hidd_send_consumer_value(hid_conn_id, key, press);
+}
+
 static void button_event_cb_up(void *arg, void *data)
 {
-    ESP_LOGE(HID_DEMO_TAG, "Button event %s", button_event_table[(button_event_t)data]);
-    if (sec_conn) {
-        esp_hidd_send_consumer_value(hid_conn_id, HID_CONSUMER_VOLUME_UP, true);
-        esp_hidd_send_consumer_value(hid_conn_id, HID_CONSUMER_VOLUME_UP, false);
-        //uint8_t key_vaule = HID_CONSUMER_VOLUME_UP ;
-        //esp_hidd_send_keyboard_value(hid_conn_id, 0, &key_vaule, 1);
+    button_event_t event = (button_event_t)data;
+    ESP_LOGE(HID_DEMO_TAG, "Button event %s", button_event_table[event]);
+
+    if (!sec_conn) return;
+
+    switch(event) {
+        case BUTTON_SINGLE_CLICK:
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, false);
+            break;
+        case BUTTON_DOUBLE_CLICK:
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, false);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, false);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, false);
+            break;
+        case BUTTON_LONG_PRESS_START:
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, false);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, false);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, false);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, false);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_UP, false);
+            break;
+        default:
+            break;
     }
 }
 
@@ -132,17 +161,52 @@ void button_init_up(uint32_t button_num)
     button_handle_t btn = iot_button_create(&btn_cfg);
     assert(btn);
     esp_err_t err = iot_button_register_cb(btn, BUTTON_SINGLE_CLICK, button_event_cb_up, (void *)BUTTON_SINGLE_CLICK);
+    //err |= iot_button_register_cb(btn, BUTTON_PRESS_UP, button_event_cb_up, (void *)BUTTON_PRESS_UP);
+    //err |= iot_button_register_cb(btn, BUTTON_PRESS_REPEAT, button_event_cb_up, (void *)BUTTON_PRESS_REPEAT);
+    //err |= iot_button_register_cb(btn, BUTTON_PRESS_REPEAT_DONE, button_event_cb_up, (void *)BUTTON_PRESS_REPEAT_DONE);
+    //err |= iot_button_register_cb(btn, BUTTON_SINGLE_CLICK, button_event_cb_up, (void *)BUTTON_PRESS_DOWN);
+    err |= iot_button_register_cb(btn, BUTTON_DOUBLE_CLICK, button_event_cb_up, (void *)BUTTON_DOUBLE_CLICK);
+    err |= iot_button_register_cb(btn, BUTTON_LONG_PRESS_START, button_event_cb_up, (void *)BUTTON_LONG_PRESS_START);
+    //err |= iot_button_register_cb(btn, BUTTON_LONG_PRESS_HOLD, button_event_cb_up, (void *)BUTTON_LONG_PRESS_HOLD);
+    //err |= iot_button_register_cb(btn, BUTTON_LONG_PRESS_UP, button_event_cb_up, (void *)BUTTON_LONG_PRESS_UP);
+
     ESP_ERROR_CHECK(err);
 }
 
 static void button_event_cb_down(void *arg, void *data)
 {
-    ESP_LOGE(HID_DEMO_TAG, "Button event %s", button_event_table[(button_event_t)data]);
-    if (sec_conn) {
-        esp_hidd_send_consumer_value(hid_conn_id, HID_CONSUMER_VOLUME_DOWN, true);
-        esp_hidd_send_consumer_value(hid_conn_id, HID_CONSUMER_VOLUME_DOWN, false);
-        //uint8_t key_vaule = HID_CONSUMER_VOLUME_UP ;
-        //esp_hidd_send_keyboard_value(hid_conn_id, 0, &key_vaule, 1);
+    button_event_t event = (button_event_t)data;
+    ESP_LOGE(HID_DEMO_TAG, "Button event %s", button_event_table[event]);
+
+    if (!sec_conn) return;
+
+    switch(event) {
+        case BUTTON_SINGLE_CLICK:
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, false);
+            break;
+        case BUTTON_DOUBLE_CLICK:
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, false);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, false);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, false);
+            break;
+        case BUTTON_LONG_PRESS_START:
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, false);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, false);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, false);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, false);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, true);
+            send_consumer_value(HID_CONSUMER_VOLUME_DOWN, false);
+            break;
+        default:
+            break;
     }
 }
 
@@ -158,6 +222,14 @@ void button_init_down(uint32_t button_num)
     button_handle_t btn = iot_button_create(&btn_cfg);
     assert(btn);
     esp_err_t err = iot_button_register_cb(btn, BUTTON_SINGLE_CLICK, button_event_cb_down, (void *)BUTTON_SINGLE_CLICK);
+    //err |= iot_button_register_cb(btn, BUTTON_PRESS_UP, button_event_cb_down, (void *)BUTTON_PRESS_UP);
+    //err |= iot_button_register_cb(btn, BUTTON_PRESS_REPEAT, button_event_cb_down, (void *)BUTTON_PRESS_REPEAT);
+    //err |= iot_button_register_cb(btn, BUTTON_PRESS_REPEAT_DONE, button_event_cb_down, (void *)BUTTON_PRESS_REPEAT_DONE);
+    //err |= iot_button_register_cb(btn, BUTTON_SINGLE_CLICK, button_event_cb_down, (void *)BUTTON_PRESS_DOWN);
+    err |= iot_button_register_cb(btn, BUTTON_DOUBLE_CLICK, button_event_cb_down, (void *)BUTTON_DOUBLE_CLICK);
+    err |= iot_button_register_cb(btn, BUTTON_LONG_PRESS_START, button_event_cb_down, (void *)BUTTON_LONG_PRESS_START);
+    //err |= iot_button_register_cb(btn, BUTTON_LONG_PRESS_HOLD, button_event_cb_down, (void *)BUTTON_LONG_PRESS_HOLD);
+    //err |= iot_button_register_cb(btn, BUTTON_LONG_PRESS_UP, button_event_cb_down, (void *)BUTTON_LONG_PRESS_UP);
     ESP_ERROR_CHECK(err);
 }
 
@@ -169,7 +241,6 @@ static void hidd_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *
                 //esp_bd_addr_t rand_addr = {0x04,0x11,0x11,0x11,0x11,0x05};
                 esp_ble_gap_set_device_name(HIDD_DEVICE_NAME);
                 esp_ble_gap_config_adv_data(&hidd_adv_data);
-
             }
             break;
         }
